@@ -1,5 +1,5 @@
 //
-//  SignalMarshal.swift
+//  Marshal.swift
 //  gstreamer-swift
 //
 //  Created by @graphiclife on September 25, 2023.

@@ -41,4 +41,12 @@ public final class Message {
     public var source: UnsafePointer<GstObject> {
         return gst_message_src(message)
     }
+
+    public var structure: Structure? {
+        guard let structure = gst_message_get_structure(message) else {
+            return nil
+        }
+
+        return .init(structure: structure)
+    }
 }

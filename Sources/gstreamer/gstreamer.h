@@ -1,5 +1,10 @@
-#include <gst/gst.h>
 #include <glib.h>
+#include <glib-object.h>
+
+#include <gio/gio.h>
+
+#include <gst/gst.h>
+#include <gst/net/net.h>
 
 #ifndef GSTREAMER_SWIFT_EXPORT_TYPES
 #define GSTREAMER_SWIFT_EXPORT_TYPES
@@ -34,6 +39,14 @@ static inline const GstObject *gst_message_src(GstMessage *message) {
 }
 
 static const GSourceFunc gst_bus_w_async_signal_func = (GSourceFunc) gst_bus_async_signal_func;
+
+static inline GstPadProbeType gst_pad_probe_info_type(GstPadProbeInfo *info) {
+    return GST_PAD_PROBE_INFO_TYPE(info);
+}
+
+static inline gpointer gst_pad_probe_info_data(GstPadProbeInfo *info) {
+    return GST_PAD_PROBE_INFO_DATA(info);
+}
 
 #endif
 

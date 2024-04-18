@@ -1,5 +1,5 @@
 //
-//  Element.swift
+//  Probe.swift
 //  gstreamer-swift
 //
 //  Created by @graphiclife on September 25, 2023.
@@ -26,50 +26,50 @@
 import Foundation
 import gstreamer
 
-public enum PadError: Error {
-    case linkFailed
-}
+public class Probe {
+    private static let probeCallback: GstPadProbeCallback = { pad, probeInfo, userData in
+        guard let userData else {
+            return GST_PAD_PROBE_PASS
+        }
 
-public final class Pad {
-    public let pad: UnsafeMutablePointer<GstPad>
-
-    public init(pad: UnsafeMutablePointer<GstPad>) {
-        self.pad = pad
-        gst_object_ref(pad)
+        return Unmanaged<Probe>
+            .fromOpaque(userData)
+            .takeUnretainedValue()
+            .call(probeInfo: probeInfo)
     }
 
-    deinit {
-        gst_object_unref(pad)
+    private static let probeFinalize: GDestroyNotify = { notifyData in
+        guard let notifyData else {
+            return
+        }
+
+        Unmanaged<Marshal>
+            .fromOpaque(notifyData)
+            .release()
     }
 
-    public var name: String? {
-        let name = pad.withMemoryRebound(to: GstObject.self, capacity: 1) { pointer in
-            return gst_object_get_name(pointer)
-        }
-
-        guard let name else {
-            return nil
-        }
-
-        defer {
-            g_free(name)
-        }
-        
-        return String(cString: name, encoding: .utf8)
+    enum ProbeError: Error {
+        case closureAllocationFailed
     }
 
-    @discardableResult
-    public func link(to another: Pad) throws -> Self {
-        if gst_pad_link(pad, another.pad) != GST_PAD_LINK_OK {
-            throw PadError.linkFailed
-        }
+    public typealias Handler = (UnsafeMutablePointer<GstPadProbeInfo>?) -> GstPadProbeReturn
 
-        return self
+    let type: GstPadProbeType
+    let handler: Handler
+
+    public init(type: GstPadProbeType, handler: @escaping Handler) {
+        self.type = type
+        self.handler = handler
     }
 
     @discardableResult
-    public func addProbe(_ probe: Probe) throws -> Self {
-        probe.attach(to: self)
-        return self
+    internal func attach(to pad: Pad) -> UInt {
+        let reference = Unmanaged.passRetained(self).toOpaque()
+
+        return gst_pad_add_probe(pad.pad, type, Self.probeCallback, reference, Self.probeFinalize)
+    }
+
+    private func call(probeInfo: UnsafeMutablePointer<GstPadProbeInfo>?) -> GstPadProbeReturn {
+        return handler(probeInfo)
     }
 }

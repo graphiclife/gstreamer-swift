@@ -33,6 +33,10 @@ public final class Structure {
         self.structure = gst_structure_new_empty(name)
     }
 
+    public init(structure: UnsafePointer<GstStructure>) {
+        self.structure = gst_structure_copy(structure)
+    }
+
     deinit {
         gst_structure_free(structure)
     }

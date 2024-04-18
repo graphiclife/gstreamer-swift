@@ -14,7 +14,6 @@ let package = Package(
             targets: ["gstreamer-swift"]),
     ],
     dependencies: [
-        // .package(url: /* package url */, from: "1.0.0"),
     ],
     targets: [
         .systemLibrary(
@@ -25,9 +24,25 @@ let package = Package(
                 .brew(["gstreamer"])
             ]
         ),
+        .systemLibrary(
+            name: "gstreamer-net",
+            pkgConfig: "gstreamer-net-1.0",
+            providers: [
+                .apt(["gstreamer"]),
+                .brew(["gstreamer"])
+            ]
+        ),
+        .systemLibrary(
+            name: "gio",
+            pkgConfig: "gio-2.0",
+            providers: [
+                .apt(["gstreamer"]),
+                .brew(["gstreamer"])
+            ]
+        ),
         .target(
             name: "gstreamer-swift",
-            dependencies: ["gstreamer"]),
+            dependencies: ["gstreamer", "gstreamer-net", "gio"]),
         .testTarget(
             name: "gstreamer-swift-tests",
             dependencies: ["gstreamer-swift"]),

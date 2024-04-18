@@ -1,0 +1,5 @@
+module gio [system] {
+    header "gio.h"
+    link "gio"
+    export *
+}
