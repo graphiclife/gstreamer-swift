@@ -88,6 +88,12 @@ public class Element {
         return self
     }
 
+    @discardableResult
+    public func syncStateWithParent() -> Self {
+        gst_element_sync_state_with_parent(element)
+        return self
+    }
+
     public func pad(static name: String) throws -> Pad {
         guard let pad = gst_element_get_static_pad(element, name) else {
             throw ElementError.padMissing

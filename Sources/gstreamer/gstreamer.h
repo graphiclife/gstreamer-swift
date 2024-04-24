@@ -1,10 +1,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <gio/gio.h>
-
 #include <gst/gst.h>
-#include <gst/net/net.h>
 
 #ifndef GSTREAMER_SWIFT_EXPORT_TYPES
 #define GSTREAMER_SWIFT_EXPORT_TYPES

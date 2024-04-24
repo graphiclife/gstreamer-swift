@@ -26,7 +26,7 @@
 import Foundation
 import gstreamer
 
-public class Probe {
+open class Probe {
     private static let probeCallback: GstPadProbeCallback = { pad, probeInfo, userData in
         guard let userData else {
             return GST_PAD_PROBE_PASS
