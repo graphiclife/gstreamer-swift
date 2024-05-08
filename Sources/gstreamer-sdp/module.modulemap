@@ -1,5 +1,4 @@
 module gstreamer_sdp [system] {
     header "gstreamer-sdp.h"
-    link "gstreamer-sdp-1.0"
     export *
 }
