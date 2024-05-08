@@ -99,26 +99,6 @@ final class GValueCodable_Test: XCTestCase {
         XCTAssertEqual(try UInt.from(gValue: &gvalue), value)
     }
 
-    func testInt64() throws {
-        var gvalue: GValue = .init()
-        let value: Int64 = Int64.max
-
-        value.to(gValue: &gvalue)
-
-        XCTAssertEqual(gvalue.g_type, G_TYPE_W_INT64)
-        XCTAssertEqual(try Int64.from(gValue: &gvalue), value)
-    }
-
-    func testUInt64() throws {
-        var gvalue: GValue = .init()
-        let value: UInt64 = UInt64.max
-
-        value.to(gValue: &gvalue)
-
-        XCTAssertEqual(gvalue.g_type, G_TYPE_W_UINT64)
-        XCTAssertEqual(try UInt64.from(gValue: &gvalue), value)
-    }
-
     func testFloat() throws {
         var gvalue: GValue = .init()
         let value: Float = Float.greatestFiniteMagnitude

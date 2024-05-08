@@ -121,35 +121,3 @@ extension UInt: GValueCodable {
         g_value_set_ulong(gValue, self)
     }
 }
-
-extension Int64: GValueCodable {
-    public static func from(gValue: UnsafePointer<GValue>) throws -> Int64 {
-        guard gValue.gValueType == G_TYPE_W_INT64 else {
-            throw GValueCodableError.invalidType
-        }
-
-        return g_value_get_int64(gValue)
-    }
-
-    public func to(gValue: UnsafeMutablePointer<GValue>) {
-        g_value_unset(gValue)
-        g_value_init(gValue, G_TYPE_W_INT64)
-        g_value_set_int64(gValue, self)
-    }
-}
-
-extension UInt64: GValueCodable {
-    public static func from(gValue: UnsafePointer<GValue>) throws -> UInt64 {
-        guard gValue.gValueType == G_TYPE_W_UINT64 else {
-            throw GValueCodableError.invalidType
-        }
-
-        return g_value_get_uint64(gValue)
-    }
-
-    public func to(gValue: UnsafeMutablePointer<GValue>) {
-        g_value_unset(gValue)
-        g_value_init(gValue, G_TYPE_W_UINT64)
-        g_value_set_uint64(gValue, self)
-    }
-}

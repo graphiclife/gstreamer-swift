@@ -188,7 +188,6 @@ extension GObjectWrapper {
         g_signal_handler_disconnect(gObject, signalHandlerId)
     }
 
-    @discardableResult
     public func send(_ signal: String, params: [GValueCodable]) throws {
         var sender: GValue = .init()
         self.to(gValue: &sender)
