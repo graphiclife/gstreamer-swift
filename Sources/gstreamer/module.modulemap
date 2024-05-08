@@ -1,5 +1,5 @@
 module gstreamer [system] {
     header "gstreamer.h"
-    link "gstreamer"
+    link "gstreamer-1.0"
     export *
 }

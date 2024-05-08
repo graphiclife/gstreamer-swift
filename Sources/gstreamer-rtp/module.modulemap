@@ -1,5 +1,5 @@
 module gstreamer_rtp [system] {
     header "gstreamer-rtp.h"
-    link "gstreamer-rtp"
+    link "gstreamer-rtp-1.0"
     export *
 }
