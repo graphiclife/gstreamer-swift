@@ -40,4 +40,8 @@ public class Pipeline: Bin {
     public func play() {
         gst_element_set_state(element, GST_STATE_PLAYING)
     }
+
+    public func stop() {
+        gst_element_set_state(element, GST_STATE_NULL)
+    }
 }
