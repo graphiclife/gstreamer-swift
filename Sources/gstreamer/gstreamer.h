@@ -31,6 +31,10 @@ static inline GObjectClass *g_object_w_get_class(GObject *obj) {
     return G_OBJECT_GET_CLASS(obj);
 }
 
+static inline GType g_type_w_get_from_class(GObjectClass *klass) {
+    return G_TYPE_FROM_CLASS(klass);
+}
+
 static inline const GstObject *gst_message_src(GstMessage *message) {
     return GST_MESSAGE_SRC(message);
 }

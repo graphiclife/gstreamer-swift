@@ -47,9 +47,7 @@ public final class Structure {
         return self
     }
 
-    // MARK: - Private API
-
-    private func get<T: GValueCodable>(valueForKey key: String) throws -> T? {
+    public func get<T: GValueCodable>(valueForKey key: String) throws -> T? {
         guard let structureValue = gst_structure_get_value(structure, key) else {
             return nil
         }
@@ -57,7 +55,7 @@ public final class Structure {
         return try T.from(gValue: structureValue)
     }
 
-    private func unsafeGet<T: GValueCodable>(valueForKey key: String) -> T? {
+    public func unsafeGet<T: GValueCodable>(valueForKey key: String) -> T? {
         guard let structureValue = gst_structure_get_value(structure, key) else {
             return nil
         }

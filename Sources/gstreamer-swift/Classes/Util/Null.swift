@@ -1,5 +1,5 @@
 //
-//  Element.swift
+//  Null.swift
 //  gstreamer-swift
 //
 //  Created by @graphiclife on September 25, 2023.
@@ -26,58 +26,17 @@
 import Foundation
 import gstreamer
 
-public enum PadError: Error {
-    case linkFailed
-}
-
-public final class Pad {
-    public let pad: UnsafeMutablePointer<GstPad>
-
-    public init(pad: UnsafeMutablePointer<GstPad>) {
-        self.pad = pad
-        gst_object_ref(pad)
+public struct Null: GValueCodable {
+    public init() {
     }
 
-    deinit {
-        gst_object_unref(pad)
+    public static func from(gValue: UnsafePointer<GValue>) throws -> Null {
+        fatalError("not implemented")
     }
 
-    public var name: String? {
-        let name = pad.withMemoryRebound(to: GstObject.self, capacity: 1) { pointer in
-            return gst_object_get_name(pointer)
-        }
-
-        guard let name else {
-            return nil
-        }
-
-        defer {
-            g_free(name)
-        }
-        
-        return String(cString: name, encoding: .utf8)
-    }
-
-    public var currentCaps: Caps? {
-        if let caps = gst_pad_get_current_caps(pad) {
-            return .init(caps: caps)
-        }
-
-        return nil
-    }
-
-    @discardableResult
-    public func link(to another: Pad) throws -> Self {
-        if gst_pad_link(pad, another.pad) != GST_PAD_LINK_OK {
-            throw PadError.linkFailed
-        }
-
-        return self
-    }
-
-    @discardableResult
-    public func addProbe(_ probe: Probe) throws -> Self {
-        probe.attach(to: self)
-        return self
+    public func to(gValue: UnsafeMutablePointer<GValue>) {
+        g_value_unset(gValue)
+        g_value_init(gValue, G_TYPE_W_POINTER)
+        g_value_set_pointer(gValue, nil)
     }
 }

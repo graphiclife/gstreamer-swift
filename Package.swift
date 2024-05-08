@@ -41,6 +41,22 @@ let package = Package(
             ]
         ),
         .systemLibrary(
+            name: "gstreamer-sdp",
+            pkgConfig: "gstreamer-sdp-1.0",
+            providers: [
+                .apt(["gstreamer"]),
+                .brew(["gstreamer"])
+            ]
+        ),
+        .systemLibrary(
+            name: "gstreamer-webrtc",
+            pkgConfig: "gstreamer-webrtc-1.0",
+            providers: [
+                .apt(["gstreamer"]),
+                .brew(["gstreamer"])
+            ]
+        ),
+        .systemLibrary(
             name: "gio",
             pkgConfig: "gio-2.0",
             providers: [
@@ -50,7 +66,7 @@ let package = Package(
         ),
         .target(
             name: "gstreamer-swift",
-            dependencies: ["gstreamer", "gstreamer-net", "gstreamer-rtp", "gio"]),
+            dependencies: ["gstreamer", "gstreamer-net", "gstreamer-rtp", "gstreamer-sdp", "gstreamer-webrtc", "gio"]),
         .testTarget(
             name: "gstreamer-swift-tests",
             dependencies: ["gstreamer-swift"]),

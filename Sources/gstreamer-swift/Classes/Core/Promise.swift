@@ -1,5 +1,5 @@
 //
-//  Element.swift
+//  Promise.swift
 //  gstreamer-swift
 //
 //  Created by @graphiclife on September 25, 2023.
@@ -26,58 +26,31 @@
 import Foundation
 import gstreamer
 
-public enum PadError: Error {
-    case linkFailed
-}
+public final class Promise {
+    public let promise: UnsafeMutablePointer<GstPromise>
 
-public final class Pad {
-    public let pad: UnsafeMutablePointer<GstPad>
+    public init() {
+        self.promise = gst_promise_new()
+    }
 
-    public init(pad: UnsafeMutablePointer<GstPad>) {
-        self.pad = pad
-        gst_object_ref(pad)
+    public init(promise: UnsafeMutablePointer<GstPromise>) {
+        self.promise = promise
+        gst_promise_ref(promise)
     }
 
     deinit {
-        gst_object_unref(pad)
+        gst_promise_unref(promise)
     }
 
-    public var name: String? {
-        let name = pad.withMemoryRebound(to: GstObject.self, capacity: 1) { pointer in
-            return gst_object_get_name(pointer)
-        }
+    public func wait() -> GstPromiseResult {
+        return gst_promise_wait(promise)
+    }
 
-        guard let name else {
+    public var reply: Structure? {
+        guard let reply = gst_promise_get_reply(promise) else {
             return nil
         }
 
-        defer {
-            g_free(name)
-        }
-        
-        return String(cString: name, encoding: .utf8)
-    }
-
-    public var currentCaps: Caps? {
-        if let caps = gst_pad_get_current_caps(pad) {
-            return .init(caps: caps)
-        }
-
-        return nil
-    }
-
-    @discardableResult
-    public func link(to another: Pad) throws -> Self {
-        if gst_pad_link(pad, another.pad) != GST_PAD_LINK_OK {
-            throw PadError.linkFailed
-        }
-
-        return self
-    }
-
-    @discardableResult
-    public func addProbe(_ probe: Probe) throws -> Self {
-        probe.attach(to: self)
-        return self
+        return Structure(structure: reply)
     }
 }

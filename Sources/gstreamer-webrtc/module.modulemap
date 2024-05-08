@@ -1,0 +1,5 @@
+module gstreamer_webrtc [system] {
+    header "gstreamer-webrtc.h"
+    link "gstreamer-webrtc"
+    export *
+}

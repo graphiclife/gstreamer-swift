@@ -92,3 +92,16 @@ public final class Caps {
     }
 }
 
+extension Caps: CustomStringConvertible {
+    public var description: String {
+        guard let string = gst_caps_to_string(caps) else {
+            return "[Caps]"
+        }
+
+        defer {
+            g_free(string)
+        }
+
+        return "\(string)"
+    }
+}

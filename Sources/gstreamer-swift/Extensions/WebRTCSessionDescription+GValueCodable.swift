@@ -1,5 +1,5 @@
 //
-//  Element.swift
+//  Promise+GValueCodable.swift
 //  gstreamer-swift
 //
 //  Created by @graphiclife on September 25, 2023.
@@ -25,59 +25,26 @@
 
 import Foundation
 import gstreamer
+import gstreamer_webrtc
 
-public enum PadError: Error {
-    case linkFailed
-}
-
-public final class Pad {
-    public let pad: UnsafeMutablePointer<GstPad>
-
-    public init(pad: UnsafeMutablePointer<GstPad>) {
-        self.pad = pad
-        gst_object_ref(pad)
-    }
-
-    deinit {
-        gst_object_unref(pad)
-    }
-
-    public var name: String? {
-        let name = pad.withMemoryRebound(to: GstObject.self, capacity: 1) { pointer in
-            return gst_object_get_name(pointer)
+extension WebRTCSessionDescription: GValueCodable {
+    public static func from(gValue: UnsafePointer<GValue>) throws -> Self {
+        guard (g_type_is_a(gValue.gValueType, gst_webrtc_session_description_get_type()) != 0) else {
+            throw GValueCodableError.invalidType
         }
 
-        guard let name else {
-            return nil
+        guard let object = g_value_get_boxed(gValue) else {
+            throw GValueCodableError.noValue
         }
 
-        defer {
-            g_free(name)
+        return object.withMemoryRebound(to: GstWebRTCSessionDescription.self, capacity: 1) { pointer in
+            return .init(sessionDescription: pointer)
         }
-        
-        return String(cString: name, encoding: .utf8)
     }
 
-    public var currentCaps: Caps? {
-        if let caps = gst_pad_get_current_caps(pad) {
-            return .init(caps: caps)
-        }
-
-        return nil
-    }
-
-    @discardableResult
-    public func link(to another: Pad) throws -> Self {
-        if gst_pad_link(pad, another.pad) != GST_PAD_LINK_OK {
-            throw PadError.linkFailed
-        }
-
-        return self
-    }
-
-    @discardableResult
-    public func addProbe(_ probe: Probe) throws -> Self {
-        probe.attach(to: self)
-        return self
+    public func to(gValue: UnsafeMutablePointer<GValue>) {
+        g_value_unset(gValue)
+        g_value_init(gValue, gst_webrtc_session_description_get_type())
+        g_value_set_boxed(gValue, sessionDescription)
     }
 }

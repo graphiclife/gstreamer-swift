@@ -26,7 +26,12 @@
 import Foundation
 import gstreamer
 
-public protocol GObjectWrapper: AnyObject {
+public enum GObjectWrapperError: Error {
+    case memoryAllocationFailed
+    case invalidSignal
+}
+
+public protocol GObjectWrapper: GValueCodable, AnyObject {
     var gObject: UnsafeMutablePointer<GObject> { get }
 }
 
@@ -181,5 +186,58 @@ extension GObjectWrapper {
 
     public func disconnect(signalHandlerId: UInt) {
         g_signal_handler_disconnect(gObject, signalHandlerId)
+    }
+
+    @discardableResult
+    public func send(_ signal: String, params: [GValueCodable]) throws {
+        var sender: GValue = .init()
+        self.to(gValue: &sender)
+
+        var values: [GValue] = params.map {
+            var value: GValue = .init()
+            $0.to(gValue: &value)
+            return value
+        }
+
+        values.insert(sender, at: 0)
+
+        return try values.withUnsafeBufferPointer { pointer in
+            guard let values = pointer.baseAddress else {
+                throw GObjectWrapperError.memoryAllocationFailed
+            }
+
+            let signal = g_signal_lookup(signal, g_type_w_get_from_class(g_object_w_get_class(gObject)))
+
+            guard signal > 0 else {
+                throw GObjectWrapperError.invalidSignal
+            }
+
+            g_signal_emitv(values, signal, 0, nil)
+        }
+    }
+
+    @discardableResult
+    public func send<T: GValueCodable>(_ signal: String, params: [GValueCodable]) throws -> T {
+        let values: [GValue] = params.map {
+            var value: GValue = .init()
+            $0.to(gValue: &value)
+            return value
+        }
+
+        return try values.withUnsafeBufferPointer { pointer in
+            guard let values = pointer.baseAddress else {
+                throw GObjectWrapperError.memoryAllocationFailed
+            }
+
+            let signal = g_signal_lookup(signal, g_type_w_get_from_class(g_object_w_get_class(gObject)))
+
+            guard signal > 0 else {
+                throw GObjectWrapperError.invalidSignal
+            }
+
+            var result: GValue = .init()
+            g_signal_emitv(values, signal, 0, &result)
+            return try T.from(gValue: &result)
+        }
     }
 }
