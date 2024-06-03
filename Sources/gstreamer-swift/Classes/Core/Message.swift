@@ -49,4 +49,8 @@ public final class Message {
 
         return .init(structure: structure)
     }
+
+    public func hasName(_ name: String) -> Bool {
+        return gst_message_has_name(message, name) != 0
+    }
 }
