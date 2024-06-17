@@ -54,6 +54,30 @@ public class Element {
     }
 
     @discardableResult
+    public func play() -> Self {
+        gst_element_set_state(element, GST_STATE_PLAYING)
+        return self
+    }
+
+    @discardableResult
+    public func pause() -> Self {
+        gst_element_set_state(element, GST_STATE_PAUSED)
+        return self
+    }
+
+    @discardableResult
+    public func stop() -> Self {
+        gst_element_set_state(element, GST_STATE_NULL)
+        return self
+    }
+
+    @discardableResult
+    public func syncStateWithParent() -> Self {
+        gst_element_sync_state_with_parent(element)
+        return self
+    }
+
+    @discardableResult
     public func set(_ key: String, to value: GValueCodable) -> Self {
         set(value: value, forKey: key)
         return self
@@ -88,12 +112,6 @@ public class Element {
         return self
     }
 
-    @discardableResult
-    public func syncStateWithParent() -> Self {
-        gst_element_sync_state_with_parent(element)
-        return self
-    }
-
     public func pad(static name: String) throws -> Pad {
         guard let pad = gst_element_get_static_pad(element, name) else {
             throw ElementError.padMissing
@@ -124,6 +142,14 @@ public class Element {
         }
 
         return .init(bus: bus)
+    }
+
+    public var baseTime: GstClockTime {
+        return gst_element_get_base_time(element)
+    }
+
+    public var startTime: GstClockTime {
+        return gst_element_get_start_time(element)
     }
 
     public func isEqual(to object: UnsafePointer<GstObject>) -> Bool {

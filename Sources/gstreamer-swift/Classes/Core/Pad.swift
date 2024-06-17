@@ -66,6 +66,16 @@ public final class Pad {
         return nil
     }
 
+    public var offset: Int64 {
+        get {
+            return gst_pad_get_offset(pad)
+        }
+
+        set {
+            gst_pad_set_offset(pad, newValue)
+        }
+    }
+
     @discardableResult
     public func link(to another: Pad) throws -> Self {
         if gst_pad_link(pad, another.pad) != GST_PAD_LINK_OK {

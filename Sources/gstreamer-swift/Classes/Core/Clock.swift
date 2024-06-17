@@ -1,5 +1,5 @@
 //
-//  Pipeline.swift
+//  Clock.swift
 //  gstreamer-swift
 //
 //  Created by @graphiclife on September 25, 2023.
@@ -26,26 +26,23 @@
 import Foundation
 import gstreamer
 
-public class Pipeline: Bin {
-    public convenience init(name: String? = nil) {
-        let pipeline: UnsafeMutablePointer<GstElement> = gst_pipeline_new(name)
+public class Clock {
+    public let clock: UnsafeMutablePointer<GstClock>
 
-        defer {
-            gst_object_unref(pipeline)
-        }
-
-        self.init(element: pipeline)
+    public init(clock: UnsafeMutablePointer<GstClock>) {
+        self.clock = clock
+        gst_object_ref(clock)
     }
 
-    public var clock: Clock {
-        return element.withMemoryRebound(to: GstPipeline.self, capacity: 1) { pipeline in
-            let clock: UnsafeMutablePointer<GstClock> = gst_pipeline_get_pipeline_clock(pipeline)
+    deinit {
+        gst_object_unref(clock)
+    }
 
-            defer {
-                gst_object_unref(clock)
-            }
+    public var time: GstClockTime {
+        return gst_clock_get_time(clock)
+    }
 
-            return .init(clock: clock)
-        }
+    public func interval(since: GstClockTime) -> GstClockTime {
+        return time - since
     }
 }
