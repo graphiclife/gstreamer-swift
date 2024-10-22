@@ -217,11 +217,16 @@ extension GObjectWrapper {
 
     @discardableResult
     public func send<T: GValueCodable>(_ signal: String, params: [GValueCodable]) throws -> T {
-        let values: [GValue] = params.map {
+        var sender: GValue = .init()
+        self.to(gValue: &sender)
+
+        var values: [GValue] = params.map {
             var value: GValue = .init()
             $0.to(gValue: &value)
             return value
         }
+
+        values.insert(sender, at: 0)
 
         return try values.withUnsafeBufferPointer { pointer in
             guard let values = pointer.baseAddress else {

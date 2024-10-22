@@ -145,11 +145,23 @@ public class Element {
     }
 
     public var baseTime: GstClockTime {
-        return gst_element_get_base_time(element)
+        get {
+            return gst_element_get_base_time(element)
+        }
+
+        set {
+            gst_element_set_base_time(element, newValue)
+        }
     }
 
     public var startTime: GstClockTime {
-        return gst_element_get_start_time(element)
+        get {
+            return gst_element_get_start_time(element)
+        }
+
+        set {
+            gst_element_set_start_time(element, newValue)
+        }
     }
 
     public func isEqual(to object: UnsafePointer<GstObject>) -> Bool {
