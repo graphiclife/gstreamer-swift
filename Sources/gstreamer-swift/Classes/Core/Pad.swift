@@ -66,7 +66,7 @@ public final class Pad {
         return nil
     }
 
-    public var offset: Int64 {
+    public var offset: gint64 {
         get {
             return gst_pad_get_offset(pad)
         }
